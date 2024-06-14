@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Fragments</h2>
+<div class="container">
+    <div class="row">
+        {% for fragment in fragments %}
+        <div class="col-md-2 text-center mx-4">
+            <img src="data:image/gif;base64,{{ fragment.file_base64 }}" alt="Base64 GIF" style="border-radius: 25%;">
+            <div style="margin-top: 10px;">
+                <p style="margin: 0 auto; width: fit-content;">{{ fragment._id }}</p>
+            </div>
+        </div>
+        {% if loop.index % 4 == 0 %}
+    </div>
+    <div class="row">
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

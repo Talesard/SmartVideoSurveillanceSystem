@@ -1,0 +1,2 @@
+ls .
+camera_data_dump.pickle label_encoder.picle

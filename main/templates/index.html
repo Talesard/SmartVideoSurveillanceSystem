@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="App Logo" class="img-fluid">
+    <h1 class="mt-4">Welcome to the WEB UI</h1>
+    <p class="lead">This is a simple web application for managing logs and video clips of a smart surveillance system.</p>
+    <p class="lead">Register or Login to get started.</p>
+</div>
+{% endblock %}

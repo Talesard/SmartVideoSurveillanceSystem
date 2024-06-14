@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SURV WEB UI</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+        <a class="navbar-brand" href="{{ url_for('index') }}">WEB UI</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                </li>
+                {% if not username %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('api.register') }}">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('api.login') }}">Login</a>
+                </li>
+                {% endif %}
+                {% if username %}
+                <li class="nav-item">
+                    <a  class="nav-link" href="{{ url_for('api.alarm') }}">Alarm</a>
+                </li>
+                <li class="nav-item">
+                    <button  class="btn btn-link nav-link" id="logsLink">Logs</button>
+                </li>
+                <li class="nav-item">
+                    <button  class="btn btn-link nav-link" id="recordsLink">Records</button>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link">Logged in as {{ username }}</span>
+                </li>
+                <li class="nav-item">
+                    <form action="{{ url_for('api.logout') }}" method="post" class="form-inline">
+                        <button type="submit" class="btn btn-link nav-link" id="logoutButton">Logout</button>
+                    </form>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+    <!-- <footer class="footer mt-auto py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">The presence of bugs is guaranteed. You can write about problems on <a href="https://github.com/talesard" target="_blank">GitHub <img src="{{ url_for('static', filename='images/github.png') }}" alt="GitHub Mascot" class="github-mascot"></a></span>
+        </div>
+    </footer> -->
+</body>
+
+<script>
+
+    const addLogsLinkListener = () => {
+        document.getElementById('logsLink').addEventListener('click', ()=> {
+            console.log("logsLink");
+            apiGET("{{ url_for('api.logs') }}")
+            .then (resp => {
+                return resp.text();
+            })
+            .then (html => {
+                document.body.innerHTML = html;
+            });
+        });
+    }
+
+
+    const addRecordsLinkListener = () => {
+        document.getElementById('recordsLink').addEventListener('click', ()=> {
+            console.log("recordsLink");
+            resp = apiGET("{{ url_for('api.fragments') }}")
+            .then (resp => {
+                return resp.text();
+            })
+            .then (html => {
+                document.body.innerHTML = html;
+            });
+        });
+    }
+
+    addLogsLinkListener();
+    addRecordsLinkListener();
+
+    document.getElementById('logoutButton').addEventListener('click', function() {
+        localStorage.clear();
+        console.log("localStorage.clear()")
+        document.cookie.split(";").forEach(function(c) { 
+            document.cookie = c.trim().split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/"; 
+        });
+
+        fetch('{{ url_for("api.logout") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        }).then(response => {
+            if (response.ok) {
+                window.location.href = '{{ url_for("index") }}';
+            } else {
+                console.error('Logout failed');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</html>
